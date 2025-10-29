@@ -1,0 +1,124 @@
+name: Build Windows Application
+
+on:
+  push:
+    tags:
+      - 'v*'  # v1.0.0 같은 태그를 push하면 실행
+  workflow_dispatch:  # GitHub UI에서 수동 실행 가능
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-standalone.txt
+
+    - name: Create Windows icon
+      run: python create_windows_icon.py
+
+    - name: Build .exe with PyInstaller
+      run: pyinstaller standalone_windows.spec --clean --noconfirm
+
+    - name: Verify .exe was created
+      run: |
+        if (Test-Path "dist\AndroidProjectRebuilder.exe") {
+          Write-Host "✓ .exe file created successfully"
+          $size = (Get-Item "dist\AndroidProjectRebuilder.exe").Length / 1MB
+          Write-Host "  Size: $([math]::Round($size, 2)) MB"
+        } else {
+          Write-Host "✗ .exe file not found!"
+          exit 1
+        }
+
+    - name: Download and Install Inno Setup
+      run: |
+        # Download Inno Setup
+        Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "innosetup.exe"
+
+        # Install silently
+        Start-Process -FilePath "innosetup.exe" -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-" -Wait
+
+        Write-Host "✓ Inno Setup installed"
+
+    - name: Build Installer with Inno Setup
+      run: |
+        # Inno Setup 경로
+        $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+
+        # 설치 프로그램 빌드
+        & $iscc "installer\windows_installer.iss"
+
+        if (Test-Path "dist\AndroidProjectRebuilder-Setup-v1.0.0.exe") {
+          Write-Host "✓ Installer created successfully"
+          $size = (Get-Item "dist\AndroidProjectRebuilder-Setup-v1.0.0.exe").Length / 1MB
+          Write-Host "  Size: $([math]::Round($size, 2)) MB"
+        } else {
+          Write-Host "✗ Installer not found!"
+          exit 1
+        }
+
+    - name: Upload Portable .exe as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: AndroidProjectRebuilder-Windows-Portable
+        path: dist/AndroidProjectRebuilder.exe
+        retention-days: 90
+
+    - name: Upload Installer as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: AndroidProjectRebuilder-Windows-Installer
+        path: dist/AndroidProjectRebuilder-Setup-v1.0.0.exe
+        retention-days: 90
+
+    - name: Create Release (if tag)
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          dist/AndroidProjectRebuilder.exe
+          dist/AndroidProjectRebuilder-Setup-v1.0.0.exe
+        body: |
+          ## Android Project Rebuilder - Windows Edition
+
+          ### 📦 다운로드
+
+          **권장: 설치 프로그램**
+          - `AndroidProjectRebuilder-Setup-v1.0.0.exe` - 시작 메뉴 통합, 자동 업데이트
+
+          **Portable (설치 불필요)**
+          - `AndroidProjectRebuilder.exe` - 단일 실행 파일
+
+          ### ✨ 기능
+          - 패키지명 자동 변경
+          - 앱 이름 수정
+          - Firebase 설정 교체
+          - 아이콘/스플래시 이미지 교체
+          - BASE_URL 변경
+
+          ### 📋 시스템 요구사항
+          - Windows 10 (1809+) 또는 Windows 11
+          - x64 아키텍처
+
+          ### ⚠️ 첫 실행 시
+          "Windows에서 PC를 보호했습니다" 경고 표시 시:
+          1. "추가 정보" 클릭
+          2. "실행" 버튼 클릭
+
+          ### 📚 문서
+          자세한 사용법은 [README_WINDOWS.md](README_WINDOWS.md) 참조
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

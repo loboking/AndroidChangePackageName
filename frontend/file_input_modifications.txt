@@ -1,0 +1,25 @@
+Replace file inputs with buttons for standalone version:
+
+1. Project ZIP:
+   FROM: <input type="file" id="projectZip" accept=".zip" required>
+   TO: <button type="button" class="file-select-btn" onclick="selectZipFile()">📁 ZIP 파일 선택</button>
+       <input type="hidden" id="projectZipPath">
+       (and update file-info id to zipFileInfo)
+
+2. Google Services:
+   FROM: <input type="file" id="googleServices" accept=".json">
+   TO: <button type="button" class="file-select-btn" onclick="selectGoogleServicesFile()">📄 JSON 파일 선택</button>
+       <input type="hidden" id="googleServicesPath">
+       (and update file-info id to googleServicesInfo)
+
+3. App Icon:
+   FROM: <input type="file" id="appIcon" accept="image/*">
+   TO: <button type="button" class="file-select-btn" onclick="selectAppIconFile()">🖼️ 아이콘 선택</button>
+       <input type="hidden" id="appIconPath">
+       (and update file-info id to appIconInfo)
+
+4. Splash Image:
+   FROM: <input type="file" id="splashImage" accept="image/*">
+   TO: <button type="button" class="file-select-btn" onclick="selectSplashFile()">🖼️ 스플래시 선택</button>
+       <input type="hidden" id="splashPath">
+       (and update file-info id to splashInfo)

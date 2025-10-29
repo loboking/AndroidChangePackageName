@@ -1,0 +1,113 @@
+name: Build macOS Application
+
+on:
+  push:
+    tags:
+      - 'v*'  # v1.0.0 같은 태그를 push하면 실행
+  workflow_dispatch:  # GitHub UI에서 수동 실행 가능
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-standalone.txt
+
+    - name: Create app icon
+      run: |
+        python create_app_icon.py
+        iconutil -c icns resources/icon.iconset -o resources/icon.icns
+
+    - name: Create standalone HTML
+      run: python create_standalone_html.py
+
+    - name: Build .app with PyInstaller
+      run: pyinstaller standalone.spec --clean --noconfirm
+
+    - name: Verify .app was created
+      run: |
+        if [ -d "dist/AndroidProjectRebuilder.app" ]; then
+          echo "✓ .app bundle created successfully"
+          du -sh dist/AndroidProjectRebuilder.app
+        else
+          echo "✗ .app bundle not found!"
+          exit 1
+        fi
+
+    - name: Create DMG
+      run: |
+        # Create DMG for distribution
+        hdiutil create -volname "Android Project Rebuilder" \
+                       -srcfolder dist/AndroidProjectRebuilder.app \
+                       -ov -format UDZO \
+                       dist/AndroidProjectRebuilder.dmg
+
+        if [ -f "dist/AndroidProjectRebuilder.dmg" ]; then
+          echo "✓ DMG created successfully"
+          ls -lh dist/AndroidProjectRebuilder.dmg
+        else
+          echo "✗ DMG not found!"
+          exit 1
+        fi
+
+    - name: Upload .app as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: AndroidProjectRebuilder-macOS-App
+        path: dist/AndroidProjectRebuilder.app
+        retention-days: 90
+
+    - name: Upload DMG as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: AndroidProjectRebuilder-macOS-DMG
+        path: dist/AndroidProjectRebuilder.dmg
+        retention-days: 90
+
+    - name: Create Release (if tag)
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          dist/AndroidProjectRebuilder.dmg
+        body: |
+          ## Android Project Rebuilder - macOS Edition
+
+          ### 📦 다운로드
+
+          **DMG (권장)**
+          - `AndroidProjectRebuilder.dmg` - 드래그 앤 드롭으로 설치
+
+          ### ✨ 기능
+          - 패키지명 자동 변경
+          - 앱 이름 수정
+          - Firebase 설정 교체
+          - 아이콘/스플래시 이미지 교체
+          - BASE_URL 변경
+
+          ### 📋 시스템 요구사항
+          - macOS 10.13 (High Sierra) 이상
+          - Apple Silicon (M1/M2/M3) 또는 Intel
+
+          ### ⚠️ 첫 실행 시
+          "확인되지 않은 개발자" 경고 표시 시:
+          1. 우클릭 → "열기" 선택
+          2. "열기" 버튼 클릭
+
+          ### 📚 문서
+          자세한 사용법은 [STANDALONE_BUILD_REPORT.md](STANDALONE_BUILD_REPORT.md) 참조
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
