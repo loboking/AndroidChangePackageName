@@ -14,8 +14,8 @@ replacements = [
         '<button type="button" class="file-select-btn" onclick="selectZipFile()">📁 ZIP 파일 선택</button>\n                <input type="hidden" id="projectZipPath">'
     ),
     (
-        '<div class="file-info">업로드할 Android 프로젝트 ZIP 파일을 선택하세요</div>',
-        '<div class="file-info" id="zipFileInfo">업로드할 Android 프로젝트 ZIP 파일을 선택하세요</div>'
+        '<div class="file-info">압축된 Android 프로젝트 파일을 선택하세요</div>',
+        '<div class="file-info" id="zipFileInfo">압축된 Android 프로젝트 파일을 선택하세요</div>'
     ),
     # Google Services
     (
@@ -23,8 +23,8 @@ replacements = [
         '<button type="button" class="file-select-btn" onclick="selectGoogleServicesFile()">📄 JSON 파일 선택</button>\n                <input type="hidden" id="googleServicesPath">'
     ),
     (
-        '<div class="file-info">Firebase Console에서 다운로드한 google-services.json</div>',
-        '<div class="file-info" id="googleServicesInfo">Firebase Console에서 다운로드한 google-services.json</div>'
+        '<div class="file-info">Firebase 설정 파일 (선택)</div>',
+        '<div class="file-info" id="googleServicesInfo">Firebase 설정 파일 (선택)</div>'
     ),
     # App Icon
     (
@@ -32,8 +32,8 @@ replacements = [
         '<button type="button" class="file-select-btn" onclick="selectAppIconFile()">🖼️ 아이콘 선택</button>\n                <input type="hidden" id="appIconPath">'
     ),
     (
-        '<div class="file-info">PNG, JPG 형식 (정사각형 권장, 512x512 이상)</div>',
-        '<div class="file-info" id="appIconInfo">PNG, JPG 형식 (정사각형 권장, 512x512 이상)</div>'
+        '<div class="file-info">PNG 또는 JPG 형식 (모든 해상도에 적용)</div>',
+        '<div class="file-info" id="appIconInfo">PNG 또는 JPG 형식 (모든 해상도에 적용)</div>'
     ),
     # Splash Image
     (
@@ -41,8 +41,8 @@ replacements = [
         '<button type="button" class="file-select-btn" onclick="selectSplashFile()">🖼️ 스플래시 선택</button>\n                <input type="hidden" id="splashPath">'
     ),
     (
-        '<div class="file-info">PNG, JPG 형식 (세로로 긴 이미지 권장, 1080x1920 권장)</div>',
-        '<div class="file-info" id="splashInfo">PNG, JPG 형식 (세로로 긴 이미지 권장, 1080x1920 권장)</div>'
+        '<div class="file-info">PNG 또는 JPG 형식 - 스플래시 화면에 사용되는 이미지</div>',
+        '<div class="file-info" id="splashInfo">PNG 또는 JPG 형식 - 스플래시 화면에 사용되는 이미지</div>'
     ),
 ]
 
