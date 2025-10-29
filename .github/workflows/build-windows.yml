@@ -27,6 +27,9 @@ jobs:
     - name: Create Windows icon
       run: python create_windows_icon.py
 
+    - name: Create standalone HTML
+      run: python create_standalone_html.py
+
     - name: Build .exe with PyInstaller
       run: pyinstaller standalone_windows.spec --clean --noconfirm
 

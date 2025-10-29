@@ -29,7 +29,7 @@ jobs:
         python create_app_icon.py
         iconutil -c icns resources/icon.iconset -o resources/icon.icns
 
-    - name: Create standalone HTML
+    - name: Create standalone HTML (with fixed IDs)
       run: python create_standalone_html.py
 
     - name: Build .app with PyInstaller
