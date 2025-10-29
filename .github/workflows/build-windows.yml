@@ -44,43 +44,9 @@ jobs:
           exit 1
         }
 
-    - name: Download and Install Inno Setup
-      run: |
-        # Download Inno Setup
-        Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "innosetup.exe"
-
-        # Install silently
-        Start-Process -FilePath "innosetup.exe" -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-" -Wait
-
-        Write-Host "✓ Inno Setup installed"
-
-    - name: Build Installer with Inno Setup
-      run: |
-        # Inno Setup 경로
-        $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
-
-        # 설치 프로그램 빌드
-        & $iscc "installer\windows_installer.iss"
-
-        if (Test-Path "dist\AndroidProjectRebuilder-Setup-v1.0.0.exe") {
-          Write-Host "✓ Installer created successfully"
-          $size = (Get-Item "dist\AndroidProjectRebuilder-Setup-v1.0.0.exe").Length / 1MB
-          Write-Host "  Size: $([math]::Round($size, 2)) MB"
-        } else {
-          Write-Host "✗ Installer not found!"
-          exit 1
-        }
-
     - name: Upload Portable .exe as artifact
       uses: actions/upload-artifact@v4
       with:
         name: AndroidProjectRebuilder-Windows-Portable
         path: dist/AndroidProjectRebuilder.exe
-        retention-days: 90
-
-    - name: Upload Installer as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: AndroidProjectRebuilder-Windows-Installer
-        path: dist/AndroidProjectRebuilder-Setup-v1.0.0.exe
         retention-days: 90
