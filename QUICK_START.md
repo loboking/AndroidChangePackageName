@@ -1,47 +1,48 @@
-# 🚀 빠른 시작 가이드 (30초 안에!)
+# 🚀 빠른 시작 가이드
 
-## 3단계로 끝내기
+## 1️⃣ GitHub에 푸시 (1분)
 
-### 1️⃣ 서버 실행 (10초)
 ```bash
-./run.sh
+# GitHub에서 새 리포지토리 생성 후:
+git remote add origin https://github.com/YOUR_USERNAME/AndroidChangePackageName.git
+git push -u origin main
 ```
-
-### 2️⃣ 브라우저 열기 (5초)
-```
-http://localhost:8090
-```
-
-### 3️⃣ 파일 업로드 & 실행 (15초)
-1. Android 프로젝트 ZIP 선택
-2. 새 패키지명 입력 (예: `com.mycompany.newapp`)
-3. 새 앱 이름 입력 (예: `MyNewApp`)
-4. **"🚀 프로젝트 리빌드 시작"** 버튼 클릭
-
-완료! 🎉
 
 ---
 
-## 💡 필수 입력값 예시
+## 2️⃣ 자동 빌드 트리거 (10초)
 
-| 항목 | 예시 | 설명 |
-|------|------|------|
-| 패키지명 | `com.example.myapp` | 영어 소문자 + 점(.) |
-| 앱 이름 | `우리회사앱` | 한글/영어 가능 |
-| Firebase | `google-services.json` | 선택사항 |
-| 아이콘 | `icon.png` | 선택사항 |
-| BASE_URL | `https://api.example.com` | 선택사항 |
+```bash
+# 버전 태그 생성
+git tag v1.0.0
 
----
+# 태그 푸시 → 자동 빌드 시작!
+git push origin v1.0.0
+```
 
-## ❓ 문제 발생 시
-
-**포트가 사용 중이라고 나오면?**
-→ 스크립트가 자동으로 종료하고 재시작합니다!
-
-**더 자세한 가이드가 필요하면?**
-→ [USAGE_GUIDE.md](./USAGE_GUIDE.md) 확인!
+**이게 끝입니다!** 🎉
 
 ---
 
-**즐거운 개발 되세요!** 😊
+## 3️⃣ 빌드 확인 (10-15분 대기)
+
+### GitHub Actions에서 실시간 확인
+```
+1. GitHub 리포지토리 페이지
+2. "Actions" 탭 클릭
+3. 진행 중인 워크플로우 확인
+```
+
+---
+
+## 4️⃣ 다운로드 (즉시 가능)
+
+```
+1. "Releases" 탭 클릭
+2. "v1.0.0" 릴리스 선택
+3. 다운로드:
+   - Windows: AndroidProjectRebuilder-Setup-v1.0.0.exe
+   - macOS: AndroidProjectRebuilder.dmg
+```
+
+**완성!** 🎉
