@@ -5,6 +5,11 @@ Create a simple app icon for Android Project Rebuilder
 
 from PIL import Image, ImageDraw, ImageFont
 import os
+import sys
+
+# Force UTF-8 encoding for Windows console
+if sys.platform == 'win32':
+    sys.stdout.reconfigure(encoding='utf-8')
 
 # Create resources directory
 os.makedirs('resources', exist_ok=True)

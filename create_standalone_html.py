@@ -3,6 +3,12 @@
 Create standalone HTML by modifying the original index.html
 """
 
+import sys
+
+# Force UTF-8 encoding for Windows console
+if sys.platform == 'win32':
+    sys.stdout.reconfigure(encoding='utf-8')
+
 with open('frontend/index.html', 'r', encoding='utf-8') as f:
     html = f.read()
 
