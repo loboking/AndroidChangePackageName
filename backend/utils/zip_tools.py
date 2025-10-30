@@ -20,9 +20,25 @@ def extract_zip(zip_path: str, extract_to: str) -> str:
     """
     logs = []
 
+    # 제외할 파일/폴더 패턴
+    EXCLUDE_PATTERNS = {'__MACOSX', '.DS_Store', 'Thumbs.db', '._.'}
+
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(extract_to)
-        logs.append(f"[ZIP] Extracted {len(zip_ref.namelist())} files to {extract_to}")
+        # 필터링된 파일만 압축 해제
+        extracted_count = 0
+        for member in zip_ref.namelist():
+            # 제외 패턴 체크
+            should_skip = False
+            for pattern in EXCLUDE_PATTERNS:
+                if pattern in member or member.startswith('.'):
+                    should_skip = True
+                    break
+
+            if not should_skip:
+                zip_ref.extract(member, extract_to)
+                extracted_count += 1
+
+        logs.append(f"[ZIP] Extracted {extracted_count} files to {extract_to} (skipped system files)")
 
     # 압축 해제 후 실제 프로젝트 루트 찾기
     # __MACOSX와 같은 시스템 폴더는 무시
@@ -84,8 +100,8 @@ def create_zip(source_dir: str, output_zip: str, log_content: str = None, new_fo
     file_count = 0
 
     # 제외할 폴더 및 파일 패턴
-    EXCLUDE_DIRS = {'build', '.gradle', '.idea', 'outputs', '__pycache__', '.git'}
-    EXCLUDE_FILES = {'.DS_Store', 'Thumbs.db'}
+    EXCLUDE_DIRS = {'build', '.gradle', '.idea', 'outputs', '__pycache__', '.git', '__MACOSX'}
+    EXCLUDE_FILES = {'.DS_Store', 'Thumbs.db', '._.DS_Store'}
 
     with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as zipf:
         source_path = Path(source_dir)
